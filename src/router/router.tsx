@@ -3,6 +3,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ManagerLayout } from '@/components/layout/ManagerLayout';
 import { LoginPage } from '@/features/auth/LoginPage';
 import { NotFoundPage } from '@/pages/NotFoundPage';
+import { RouteErrorPage } from '@/pages/RouteErrorPage';
 import { ProtectedRoute, RequirePermission } from './ProtectedRoute';
 
 const OverviewPage = lazy(() => import('@/features/dashboard/OverviewPage'));
@@ -13,9 +14,10 @@ const ActivityDetailPage = lazy(() => import('@/features/activities/ActivityDeta
 const ReviewsPage = lazy(() => import('@/features/reviews/ReviewsPage'));
 
 export const router = createBrowserRouter([
-  { path: '/login', element: <LoginPage /> },
+  { path: '/login', element: <LoginPage />, errorElement: <RouteErrorPage /> },
   {
     path: '/',
+    errorElement: <RouteErrorPage />,
     element: (
       <ProtectedRoute>
         <ManagerLayout />
@@ -38,5 +40,5 @@ export const router = createBrowserRouter([
       }
     ]
   },
-  { path: '*', element: <NotFoundPage /> }
+  { path: '*', element: <NotFoundPage />, errorElement: <RouteErrorPage /> }
 ]);
