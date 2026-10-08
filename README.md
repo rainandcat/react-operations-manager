@@ -2,7 +2,7 @@
 
 A public React portfolio project for operational workflows. It is a clean-room implementation that uses only locally authored mock data.
 
-Current status: customer and activity lists and details use a fully local mock API with URL-backed search, filters, sorting, pagination, and loading/error/empty states. Demo sign-in and protected navigation are also available. Dashboard summaries and review mutations remain planned. See [Product spec](docs/PRODUCT_SPEC.md).
+Current status: demo sign-in and protected navigation, customer and activity lists/details, a fictional dashboard snapshot, and a reviewer-only decision queue are available. Lists use URL-backed search, filters, sorting, and pagination. All data stays in a local mock API. See [Product spec](docs/PRODUCT_SPEC.md).
 
 ## Planned scope
 
@@ -21,6 +21,8 @@ npm run dev
 Open the local URL shown by Vite. Demo accounts: `reviewer@demo.invalid` (review queue access) or `operator@demo.invalid` (browse only). Both use passcode `demo123`. These are public demo strings, not real credentials. The session is stored only in browser session storage.
 
 In Customers, search by fictional name or ID, filter, sort, and open a detail. Activities has independent filtering, sorting, and detail views. The “Simulate service error” controls demonstrate the error state. No real network request is sent by the mock service.
+
+Dashboard links to fictional records. Reviewers can approve, request information, or reject a case after explicit confirmation. The review state resets on reload. Returning from a filtered list detail preserves the URL filters. No real network request is sent by the mock service.
 
 ## Quality checks
 

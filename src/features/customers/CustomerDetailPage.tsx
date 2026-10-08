@@ -1,15 +1,18 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import { ApiRequestError } from '@/services/apiTypes';
 import { useCustomer } from './useCustomer';
 
 export default function CustomerDetailPage() {
   const { customerId } = useParams();
+  const location = useLocation();
+  const listSearch = (location.state as { listSearch?: string } | null)?.listSearch;
+  const backTo = listSearch?.startsWith('?') ? `/customers${listSearch}` : '/customers';
   const query = useCustomer(customerId ?? '');
   const notFound = query.error instanceof ApiRequestError && query.error.code === 'NOT_FOUND';
 
   return (
     <div className="page-stack">
-      <Link className="back-link" to="/customers">
+      <Link className="back-link" to={backTo}>
         ← Customer directory
       </Link>
       {query.isPending && (
@@ -27,7 +30,7 @@ export default function CustomerDetailPage() {
               : 'An unexpected demo error occurred.'}
           </p>
           {notFound ? (
-            <Link className="button button-primary" to="/customers">
+            <Link className="button button-primary" to={backTo}>
               Back to directory
             </Link>
           ) : (
@@ -60,8 +63,11 @@ export default function CustomerDetailPage() {
             </div>
           </dl>
           <p className="muted">
-            All details are fictional. Related activity will be linked in a later milestone.
+            All details are fictional. Use the activity directory to explore the demo records.
           </p>
+          <Link className="button button-primary" to="/activities">
+            Browse activity records
+          </Link>
         </section>
       )}
     </div>

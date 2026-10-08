@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { ApiRequestError } from '@/services/apiTypes';
 import type { CustomerStatus } from './types';
 import { useCustomers } from './useCustomers';
@@ -16,6 +16,7 @@ function readStatus(value: string | null): CustomerStatus | undefined {
 }
 
 export default function CustomersPage() {
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const searchInput = searchParams.get('search') ?? '';
   const search = useDebouncedValue(searchInput, 300);
@@ -151,7 +152,12 @@ export default function CustomersPage() {
                   {query.data.data.map((customer) => (
                     <tr key={customer.id}>
                       <th scope="row">
-                        <Link to={`/customers/${customer.id}`}>{customer.displayName}</Link>
+                        <Link
+                          to={`/customers/${customer.id}`}
+                          state={{ listSearch: location.search }}
+                        >
+                          {customer.displayName}
+                        </Link>
                       </th>
                       <td>{customer.id}</td>
                       <td>

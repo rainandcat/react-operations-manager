@@ -1,4 +1,4 @@
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { ApiRequestError } from '@/services/apiTypes';
 import type { ActivityKind, ActivitySort, ActivityStatus } from './types';
 import { useActivities } from './useActivities';
@@ -12,6 +12,7 @@ function readPage(value: string | null): number {
 }
 
 export default function ActivitiesPage() {
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const kind = kinds.find((item) => item === searchParams.get('kind'));
   const status = statuses.find((item) => item === searchParams.get('status'));
@@ -150,7 +151,12 @@ export default function ActivitiesPage() {
                   {query.data.data.map((activity) => (
                     <tr key={activity.id}>
                       <th scope="row">
-                        <Link to={`/activities/${activity.id}`}>{activity.id}</Link>
+                        <Link
+                          to={`/activities/${activity.id}`}
+                          state={{ listSearch: location.search }}
+                        >
+                          {activity.id}
+                        </Link>
                       </th>
                       <td>
                         <Link to={`/customers/${activity.customerId}`}>{activity.customerId}</Link>
