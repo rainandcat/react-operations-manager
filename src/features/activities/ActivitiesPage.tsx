@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { ApiRequestError } from '@/services/apiTypes';
 import type { ActivityKind, ActivitySort, ActivityStatus } from './types';
@@ -21,6 +22,20 @@ export default function ActivitiesPage() {
   const scenario = searchParams.get('demo') === 'error' ? 'unavailable' : 'normal';
   const query = useActivities({ kind, status, sort, page, pageSize: 5 }, scenario);
   const totalPages = Math.max(1, Math.ceil((query.data?.total ?? 0) / 5));
+  const pageOutOfRange = query.isSuccess && !query.isPlaceholderData && page > totalPages;
+
+  useEffect(() => {
+    if (!pageOutOfRange) return;
+    setSearchParams(
+      (previous) => {
+        const next = new URLSearchParams(previous);
+        if (totalPages === 1) next.delete('page');
+        else next.set('page', String(totalPages));
+        return next;
+      },
+      { replace: true }
+    );
+  }, [pageOutOfRange, setSearchParams, totalPages]);
 
   function updateParams(key: string, value: string, resetPage = false) {
     setSearchParams(
@@ -121,7 +136,8 @@ export default function ActivitiesPage() {
             </button>
           </div>
         )}
-        {query.isSuccess && query.data.data.length === 0 && (
+        {pageOutOfRange && <p role="status">Moving to the last available page…</p>}
+        {query.isSuccess && !pageOutOfRange && query.data.data.length === 0 && (
           <div className="query-message">
             <strong>No records found</strong>
             <p>Try another type or status.</p>
@@ -134,7 +150,7 @@ export default function ActivitiesPage() {
             </button>
           </div>
         )}
-        {query.isSuccess && query.data.data.length > 0 && (
+        {query.isSuccess && !pageOutOfRange && query.data.data.length > 0 && (
           <>
             <div className="table-scroll">
               <table className="directory-table">

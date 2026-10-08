@@ -13,11 +13,11 @@ function LocationProbe() {
   return <output data-testid="location">{location.search}</output>;
 }
 
-function renderPage() {
+function renderPage(initialEntry = '/customers') {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={['/customers']}>
+      <MemoryRouter initialEntries={[initialEntry]}>
         <CustomersPage />
         <LocationProbe />
       </MemoryRouter>
@@ -26,6 +26,24 @@ function renderPage() {
 }
 
 describe('customer directory', () => {
+  it('corrects a one-page filtered URL without clearing the filter', async () => {
+    renderPage('/customers?status=restricted&page=2');
+    expect(await screen.findByRole('rowheader', { name: 'Morgan Reed' })).toBeTruthy();
+    expect(screen.getByTestId('location').textContent).toBe('?status=restricted');
+    expect(screen.queryByText('No customers found')).toBeNull();
+  });
+
+  it('clamps an oversized page to the last non-empty page', async () => {
+    renderPage('/customers?page=99');
+    expect(await screen.findByRole('rowheader', { name: 'Casey North' })).toBeTruthy();
+    expect(screen.getByTestId('location').textContent).toBe('?page=2');
+  });
+
+  it('returns to page one but retains a genuine empty-result filter', async () => {
+    renderPage('/customers?search=not-a-customer&page=2');
+    expect(await screen.findByText('No customers found')).toBeTruthy();
+    expect(screen.getByTestId('location').textContent).toBe('?search=not-a-customer');
+  });
   it('shows fictional results and URL-backed pagination', async () => {
     const user = userEvent.setup();
     renderPage();
