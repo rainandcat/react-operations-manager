@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { listCustomers } from './customerApi';
+import { getCustomer, listCustomers } from './customerApi';
 
 const signal = () => new AbortController().signal;
-const params = { page: 1, pageSize: 5 };
+const params = { page: 1, pageSize: 5, sort: 'joined_oldest' as const };
 
 describe('fictional customer API', () => {
   beforeEach(() => vi.useFakeTimers());
@@ -34,6 +34,21 @@ describe('fictional customer API', () => {
     const request = listCustomers(params, controller.signal);
     const assertion = expect(request).rejects.toMatchObject({ name: 'AbortError' });
     controller.abort();
+    await assertion;
+  });
+
+  it('sorts names and resolves a detail ID', async () => {
+    const sorted = listCustomers({ ...params, sort: 'name_asc' }, signal());
+    const detail = getCustomer('C-0001', signal());
+    await vi.advanceTimersByTimeAsync(350);
+    expect((await sorted).data[1]?.displayName).toBe('Casey North');
+    expect((await detail).data.id).toBe('C-0001');
+  });
+
+  it('reports an unknown detail ID', async () => {
+    const request = getCustomer('C-9999', signal());
+    const assertion = expect(request).rejects.toMatchObject({ code: 'NOT_FOUND' });
+    await vi.advanceTimersByTimeAsync(350);
     await assertion;
   });
 });

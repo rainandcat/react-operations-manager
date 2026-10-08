@@ -1,4 +1,5 @@
 export type CustomerStatus = 'active' | 'restricted' | 'pending_review';
+export type CustomerSort = 'joined_oldest' | 'name_asc';
 
 export interface Customer {
   id: string;
@@ -11,6 +12,7 @@ export interface Customer {
 export interface CustomerSearchParams {
   search?: string;
   status?: CustomerStatus;
+  sort: CustomerSort;
   page: number;
   pageSize: number;
 }

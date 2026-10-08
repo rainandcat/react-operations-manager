@@ -20,9 +20,10 @@ export default function CustomersPage() {
   const searchInput = searchParams.get('search') ?? '';
   const search = useDebouncedValue(searchInput, 300);
   const status = readStatus(searchParams.get('status'));
+  const sort = searchParams.get('sort') === 'name_asc' ? 'name_asc' : 'joined_oldest';
   const page = readPage(searchParams.get('page'));
   const scenario = searchParams.get('demo') === 'error' ? 'unavailable' : 'normal';
-  const query = useCustomers({ search, status, page, pageSize: 5 }, scenario);
+  const query = useCustomers({ search, status, sort, page, pageSize: 5 }, scenario);
   const totalPages = Math.max(1, Math.ceil((query.data?.total ?? 0) / 5));
 
   function updateParams(key: string, value: string, resetPage = false) {
@@ -72,6 +73,19 @@ export default function CustomersPage() {
               <option value="active">Active</option>
               <option value="restricted">Restricted</option>
               <option value="pending_review">Pending review</option>
+            </select>
+          </div>
+          <div className="field-group">
+            <label htmlFor="customer-sort">Sort</label>
+            <select
+              id="customer-sort"
+              value={sort}
+              onChange={(event) =>
+                updateParams('sort', event.target.value === 'name_asc' ? 'name_asc' : '', true)
+              }
+            >
+              <option value="joined_oldest">Joined: oldest first</option>
+              <option value="name_asc">Name: A to Z</option>
             </select>
           </div>
         </div>

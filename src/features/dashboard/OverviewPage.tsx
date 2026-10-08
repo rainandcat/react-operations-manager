@@ -7,15 +7,15 @@ export default function OverviewPage() {
         <p className="eyebrow">01 / Overview</p>
         <h1>A calmer view of operations.</h1>
         <p className="muted">
-          The navigation and access flows are ready. Summary data will arrive with the local mock
-          API.
+          Explore fictional customer and activity records. Dashboard summaries arrive in the next
+          milestone.
         </p>
       </header>
       <div className="preview-grid">
         <section className="surface feature-card">
           <span className="feature-number">01</span>
           <h2>Find a customer</h2>
-          <p>Search and filtering join this workspace in the next milestone.</p>
+          <p>Search, filter and inspect fictional customers.</p>
           <Link to="/customers">
             Open customers <span aria-hidden="true">↗</span>
           </Link>
@@ -23,7 +23,7 @@ export default function OverviewPage() {
         <section className="surface feature-card">
           <span className="feature-number">02</span>
           <h2>Review activity</h2>
-          <p>A typed mock service will power activity records and details.</p>
+          <p>Filter fictional records and inspect their details.</p>
           <Link to="/activities">
             Open activity <span aria-hidden="true">↗</span>
           </Link>
@@ -39,7 +39,7 @@ export default function OverviewPage() {
       </div>
       <section className="surface roadmap-strip">
         <span className="eyebrow">Current release</span>
-        <strong>M1 · Navigation & demo access</strong>
+        <strong>Mock data · Lists and details</strong>
         <span>No live account or transaction data.</span>
       </section>
     </div>

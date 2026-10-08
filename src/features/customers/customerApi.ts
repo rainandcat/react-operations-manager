@@ -1,9 +1,5 @@
-import { ApiRequestError, type PaginatedResponse } from '@/services/apiTypes';
-import {
-  requireMockService,
-  waitForMockResponse,
-  type MockScenario
-} from '@/services/mockTransport';
+import { ApiRequestError, type ApiResponse, type PaginatedResponse } from '@/services/apiTypes';
+import { runMockRequest, type MockScenario } from '@/services/mockTransport';
 import type { Customer, CustomerSearchParams } from './types';
 
 const customers: readonly Customer[] = [
@@ -79,8 +75,7 @@ export async function listCustomers(
     throw new ApiRequestError('VALIDATION_ERROR', 'Page and page size must be positive integers.');
   }
 
-  await waitForMockResponse(signal);
-  requireMockService(scenario);
+  await runMockRequest(signal, scenario);
 
   const search = params.search?.trim().toLocaleLowerCase() ?? '';
   const filtered = customers.filter(
@@ -90,13 +85,28 @@ export async function listCustomers(
         customer.displayName.toLocaleLowerCase().includes(search) ||
         customer.id.toLocaleLowerCase().includes(search))
   );
+  const sorted = [...filtered].sort((a, b) =>
+    params.sort === 'name_asc'
+      ? a.displayName.localeCompare(b.displayName)
+      : a.joinedAt.localeCompare(b.joinedAt)
+  );
   const start = (params.page - 1) * params.pageSize;
 
   return {
-    data: filtered.slice(start, start + params.pageSize),
+    data: sorted.slice(start, start + params.pageSize),
     page: params.page,
     pageSize: params.pageSize,
     total: filtered.length,
     updatedAt: '2026-01-15T12:00:00.000Z'
   };
+}
+
+export async function getCustomer(
+  customerId: string,
+  signal: AbortSignal
+): Promise<ApiResponse<Customer>> {
+  await runMockRequest(signal);
+  const customer = customers.find((item) => item.id === customerId);
+  if (!customer) throw new ApiRequestError('NOT_FOUND', 'This fictional customer does not exist.');
+  return { data: customer, updatedAt: '2026-01-15T12:00:00.000Z' };
 }

@@ -508,6 +508,40 @@ a {
   cursor: not-allowed;
   opacity: 0.45;
 }
+.record-detail {
+  padding: clamp(1.5rem, 4vw, 3rem);
+}
+.record-detail h1 {
+  margin: 0.5rem 0 2rem;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  letter-spacing: -0.06em;
+  text-transform: capitalize;
+}
+.record-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin: 0 0 2rem;
+}
+.record-grid div {
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.record-grid dt {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.record-grid dd {
+  margin: 0.4rem 0 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.record-grid a {
+  color: var(--accent);
+}
 .page-loading {
   padding: 2rem;
   color: var(--muted);
@@ -538,6 +572,9 @@ a {
   }
 }
 @media (max-width: 740px) {
+  .record-grid {
+    grid-template-columns: 1fr;
+  }
   .login-shell {
     grid-template-columns: 1fr;
   }
