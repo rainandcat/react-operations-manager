@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { authenticateDemoManager } from './demoAuth';
 import { useManagerSession } from './sessionStore';
 
@@ -13,10 +13,14 @@ export function LoginPage() {
   const [error, setError] = useState('');
   const session = useManagerSession((state) => state.session);
   const signIn = useManagerSession((state) => state.signIn);
-  const navigate = useNavigate();
   const location = useLocation();
+  const from = (location.state as LoginLocationState | null)?.from;
+  const destination =
+    from?.startsWith('/') && !from.startsWith('//') && from.split(/[?#]/)[0] !== '/login'
+      ? from
+      : '/overview';
 
-  if (session) return <Navigate to="/overview" replace />;
+  if (session) return <Navigate to={destination} replace />;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -32,9 +36,6 @@ export function LoginPage() {
     }
 
     signIn(nextSession);
-    const from = (location.state as LoginLocationState | null)?.from;
-    const destination = from?.startsWith('/') && !from.startsWith('//') ? from : '/overview';
-    navigate(destination, { replace: true });
   }
 
   return (
