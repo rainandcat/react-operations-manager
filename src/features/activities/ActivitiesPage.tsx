@@ -1,18 +1,18 @@
+import { formatDate } from '@/i18n';
+import { translate, localize, useLocale } from '@/i18n';
 import { useEffect } from 'react';
 import { Link, useLocation, useSearchParams } from 'react-router-dom';
 import { ApiRequestError } from '@/services/apiTypes';
 import type { ActivityKind, ActivitySort, ActivityStatus } from './types';
 import { useActivities } from './useActivities';
-
 const kinds: readonly ActivityKind[] = ['credit', 'debit', 'transfer'];
 const statuses: readonly ActivityStatus[] = ['pending', 'completed', 'declined'];
-
 function readPage(value: string | null): number {
   const page = Number(value);
   return Number.isSafeInteger(page) && page > 0 ? page : 1;
 }
-
 export default function ActivitiesPage() {
+  useLocale();
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const kind = kinds.find((item) => item === searchParams.get('kind'));
@@ -23,7 +23,6 @@ export default function ActivitiesPage() {
   const query = useActivities({ kind, status, sort, page, pageSize: 5 }, scenario);
   const totalPages = Math.max(1, Math.ceil((query.data?.total ?? 0) / 5));
   const pageOutOfRange = query.isSuccess && !query.isPlaceholderData && page > totalPages;
-
   useEffect(() => {
     if (!pageOutOfRange) return;
     setSearchParams(
@@ -36,7 +35,6 @@ export default function ActivitiesPage() {
       { replace: true }
     );
   }, [pageOutOfRange, setSearchParams, totalPages]);
-
   function updateParams(key: string, value: string, resetPage = false) {
     setSearchParams(
       (previous) => {
@@ -49,49 +47,50 @@ export default function ActivitiesPage() {
       { replace: true }
     );
   }
-
   return (
     <div className="page-stack">
       <header className="page-heading">
-        <p className="eyebrow">03 / Activity</p>
-        <h1>Activity records</h1>
-        <p className="muted">Review fictional activity records by type, state and date order.</p>
+        <p className="eyebrow">{translate('03 / Activity')}</p>
+        <h1>{translate('Activity records')}</h1>
+        <p className="muted">
+          {translate('Review fictional activity records by type, state and date order.')}
+        </p>
       </header>
 
-      <section className="surface directory-panel" aria-label="Activity results">
+      <section className="surface directory-panel" aria-label={translate('Activity results')}>
         <div className="directory-controls">
           <div className="field-group">
-            <label htmlFor="activity-kind">Type</label>
+            <label htmlFor="activity-kind">{translate('Type')}</label>
             <select
               id="activity-kind"
               value={kind ?? ''}
               onChange={(event) => updateParams('kind', event.target.value, true)}
             >
-              <option value="">All types</option>
+              <option value="">{translate('All types')}</option>
               {kinds.map((item) => (
                 <option key={item} value={item}>
-                  {item}
+                  {localize(item)}
                 </option>
               ))}
             </select>
           </div>
           <div className="field-group">
-            <label htmlFor="activity-status">Status</label>
+            <label htmlFor="activity-status">{translate('Status')}</label>
             <select
               id="activity-status"
               value={status ?? ''}
               onChange={(event) => updateParams('status', event.target.value, true)}
             >
-              <option value="">All statuses</option>
+              <option value="">{translate('All statuses')}</option>
               {statuses.map((item) => (
                 <option key={item} value={item}>
-                  {item}
+                  {localize(item)}
                 </option>
               ))}
             </select>
           </div>
           <div className="field-group">
-            <label htmlFor="activity-sort">Sort</label>
+            <label htmlFor="activity-sort">{translate('Sort')}</label>
             <select
               id="activity-sort"
               value={sort}
@@ -99,54 +98,60 @@ export default function ActivitiesPage() {
                 updateParams('sort', event.target.value === 'oldest' ? 'oldest' : '', true)
               }
             >
-              <option value="newest">Newest first</option>
-              <option value="oldest">Oldest first</option>
+              <option value="newest">{translate('Newest first')}</option>
+              <option value="oldest">{translate('Oldest first')}</option>
             </select>
           </div>
         </div>
         <div className="directory-meta">
           <p role="status" aria-live="polite">
-            {query.isFetching
-              ? 'Updating fictional activity…'
-              : `${query.data?.total ?? 0} fictional records`}
+            {localize(
+              query.isFetching
+                ? 'Updating fictional activity…'
+                : `${query.data?.total ?? 0} fictional records`
+            )}
           </p>
           <button
             className="demo-action"
             type="button"
             onClick={() => updateParams('demo', scenario === 'normal' ? 'error' : '')}
           >
-            {scenario === 'normal' ? 'Simulate service error' : 'Restore service'}
+            {localize(scenario === 'normal' ? 'Simulate service error' : 'Restore service')}
           </button>
         </div>
         {query.isPending && (
           <p className="query-message" role="status">
-            Loading fictional activity…
+            {translate('Loading fictional activity\u2026')}
           </p>
         )}
         {query.isError && (
           <div className="query-message" role="alert">
-            <strong>Activity unavailable</strong>
+            <strong>{translate('Activity unavailable')}</strong>
             <p>
-              {query.error instanceof ApiRequestError
-                ? query.error.message
-                : 'An unexpected demo error occurred.'}
+              {localize(
+                query.error instanceof ApiRequestError
+                  ? query.error.message
+                  : 'An unexpected demo error occurred.'
+              )}
             </p>
             <button className="button button-primary" type="button" onClick={() => query.refetch()}>
-              Try again
+              {translate('Try again')}
             </button>
           </div>
         )}
-        {pageOutOfRange && <p role="status">Moving to the last available page…</p>}
+        {pageOutOfRange && (
+          <p role="status">{translate('Moving to the last available page\u2026')}</p>
+        )}
         {query.isSuccess && !pageOutOfRange && query.data.data.length === 0 && (
           <div className="query-message">
-            <strong>No records found</strong>
-            <p>Try another type or status.</p>
+            <strong>{translate('No records found')}</strong>
+            <p>{translate('Try another type or status.')}</p>
             <button
               className="demo-action"
               type="button"
               onClick={() => setSearchParams(new URLSearchParams(), { replace: true })}
             >
-              Clear filters
+              {translate('Clear filters')}
             </button>
           </div>
         )}
@@ -156,11 +161,11 @@ export default function ActivitiesPage() {
               <table className="directory-table">
                 <thead>
                   <tr>
-                    <th scope="col">Activity</th>
-                    <th scope="col">Customer</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Date</th>
+                    <th scope="col">{translate('Activity')}</th>
+                    <th scope="col">{translate('Customer')}</th>
+                    <th scope="col">{translate('Type')}</th>
+                    <th scope="col">{translate('Status')}</th>
+                    <th scope="col">{translate('Date')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -171,17 +176,19 @@ export default function ActivitiesPage() {
                           to={`/activities/${activity.id}`}
                           state={{ listSearch: location.search }}
                         >
-                          {activity.id}
+                          {localize(activity.id)}
                         </Link>
                       </th>
                       <td>
-                        <Link to={`/customers/${activity.customerId}`}>{activity.customerId}</Link>
+                        <Link to={`/customers/${activity.customerId}`}>
+                          {localize(activity.customerId)}
+                        </Link>
                       </td>
-                      <td>{activity.kind}</td>
+                      <td>{localize(activity.kind)}</td>
                       <td>
-                        <span className="status-pill">{activity.status}</span>
+                        <span className="status-pill">{localize(activity.status)}</span>
                       </td>
-                      <td>{activity.occurredAt.slice(0, 10)}</td>
+                      <td>{localize(formatDate(activity.occurredAt))}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -189,7 +196,10 @@ export default function ActivitiesPage() {
             </div>
             <div className="pagination">
               <span>
-                Page {page} of {totalPages}
+                {translate('Page {{v0}} of {{v1}}', {
+                  v0: localize(page),
+                  v1: localize(totalPages)
+                })}
               </span>
               <div>
                 <button
@@ -197,14 +207,14 @@ export default function ActivitiesPage() {
                   disabled={page <= 1}
                   onClick={() => updateParams('page', String(page - 1))}
                 >
-                  Previous
+                  {translate('Previous')}
                 </button>
                 <button
                   type="button"
                   disabled={page >= totalPages}
                   onClick={() => updateParams('page', String(page + 1))}
                 >
-                  Next
+                  {translate('Next')}
                 </button>
               </div>
             </div>

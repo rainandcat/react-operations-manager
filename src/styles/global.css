@@ -817,3 +817,23 @@ a {
     gap: 0.5rem;
   }
 }
+
+.language-control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+}
+.language-control select {
+  max-width: 10rem;
+  min-height: 2.5rem;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  padding: 0.4rem 0.6rem;
+}
+.language-control [role='alert'] {
+  flex-basis: 100%;
+}

@@ -1,13 +1,14 @@
+import { LanguageSelector } from '@/i18n/LanguageSelector';
+import { translate, localize, useLocale } from '@/i18n';
 import { useState, type FormEvent } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { authenticateDemoManager } from './demoAuth';
 import { useManagerSession } from './sessionStore';
-
 interface LoginLocationState {
   from?: string;
 }
-
 export function LoginPage() {
+  useLocale();
   const [account, setAccount] = useState('reviewer@demo.invalid');
   const [passcode, setPasscode] = useState('');
   const [error, setError] = useState('');
@@ -19,46 +20,43 @@ export function LoginPage() {
     from?.startsWith('/') && !from.startsWith('//') && from.split(/[?#]/)[0] !== '/login'
       ? from
       : '/overview';
-
   if (session) return <Navigate to={destination} replace />;
-
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!account.trim() || !passcode.trim()) {
       setError('Enter a demo account and passcode.');
       return;
     }
-
     const nextSession = authenticateDemoManager(account, passcode);
     if (!nextSession) {
       setError('Those demo details do not match. Try an account shown below.');
       return;
     }
-
     signIn(nextSession);
   }
-
   return (
     <main className="login-shell">
       <section className="login-intro" aria-labelledby="login-title">
-        <span className="eyebrow">Operations Suite / Manager</span>
-        <h1 id="login-title">Work with clarity.</h1>
+        <span className="eyebrow">{translate('Operations Suite / Manager')}</span>
+        <h1 id="login-title">{translate('Work with clarity.')}</h1>
         <p>
-          Explore a focused operations workspace built with React. Every account and workflow here
-          is a demo.
+          {translate(
+            'Explore a focused operations workspace built with React. Every account and workflow here is a demo.'
+          )}
         </p>
         <div className="login-note">
-          <strong>Two demo roles</strong>
-          <span>Operator can browse. Reviewer can also open the review queue.</span>
+          <strong>{translate('Two demo roles')}</strong>
+          <span>{translate('Operator can browse. Reviewer can also open the review queue.')}</span>
         </div>
       </section>
 
-      <section className="login-panel" aria-label="Demo sign in">
-        <p className="eyebrow">Demo access</p>
-        <h2>Sign in</h2>
-        <p className="muted">No real account or backend is used.</p>
+      <section className="login-panel" aria-label={translate('Demo sign in')}>
+        <LanguageSelector />
+        <p className="eyebrow">{translate('Demo access')}</p>
+        <h2>{translate('Sign in')}</h2>
+        <p className="muted">{translate('No real account or backend is used.')}</p>
         <form onSubmit={handleSubmit} noValidate>
-          <label htmlFor="account">Demo account</label>
+          <label htmlFor="account">{translate('Demo account')}</label>
           <input
             id="account"
             name="account"
@@ -71,7 +69,7 @@ export function LoginPage() {
             }}
             aria-invalid={Boolean(error)}
           />
-          <label htmlFor="passcode">Demo passcode</label>
+          <label htmlFor="passcode">{translate('Demo passcode')}</label>
           <input
             id="passcode"
             name="passcode"
@@ -86,22 +84,23 @@ export function LoginPage() {
           />
           {error && (
             <p className="form-error" role="alert">
-              {error}
+              {localize(error)}
             </p>
           )}
           <button className="button button-primary" type="submit">
-            Open workspace
+            {translate('Open workspace')}
           </button>
         </form>
         <div className="demo-hint">
           <p>
-            <strong>Reviewer:</strong> reviewer@demo.invalid
+            <strong>{translate('Reviewer:')}</strong> reviewer@demo.invalid
           </p>
           <p>
-            <strong>Operator:</strong> operator@demo.invalid
+            <strong>{translate('Operator:')}</strong> operator@demo.invalid
           </p>
           <p>
-            <strong>Passcode:</strong> demo123
+            <strong>{translate('Passcode:')}</strong>
+            {translate('demo123')}
           </p>
         </div>
       </section>

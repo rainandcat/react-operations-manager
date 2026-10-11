@@ -6,6 +6,10 @@ Current status: demo sign-in and protected navigation, customer and activity lis
 
 ## Implemented scope
 
+[Live demo on Vercel](https://react-operations-manager.vercel.app/login)
+
+Use the fictional reviewer or operator account listed below to explore the deployed app. Remote CI results and production browser workflows have not been verified in this documentation.
+
 - Dashboard and operational summaries
 - Customer directory and activity records
 - Review queue with simulated mutations
@@ -24,6 +28,12 @@ In Customers, search by fictional name or ID, filter, sort, and open a detail. A
 
 Dashboard links to fictional records. Reviewers can approve, request information, or reject a case after explicit confirmation. The review state resets on reload. Returning from a filtered list detail preserves the URL filters. No real network request is sent by the mock service.
 
+## Languages
+
+English is the default; Traditional Chinese (`zh-TW`) and Simplified Chinese (`zh-CN`) are available on the login page and in the workspace header. The selection is saved locally without browser-language detection. Switching preserves the session, URL filters and review state. Navigation, forms, fictional record descriptions, errors and review feedback are translated. Arabic is exclusive to Client.
+
+Source dictionaries and documented English fallback exceptions live under `src/i18n/messages/`. `scripts/build-locales.mjs` validates keys and interpolation and merges fallback text into complete dictionaries under `src/i18n/locales/`. Dynamic imports download only the chosen language; no additional English bundle is needed for fallback text. A failed switch preserves the current language and preference. Run `npm run test:i18n` to validate and regenerate dictionaries.
+
 ## Quality checks
 
 Unexpected route/render failures show a safe recovery screen instead of a blank page. The demo does not expose internal error details or send them to an external service.
@@ -38,8 +48,8 @@ npm run build
 
 ## Browser verification
 
-Local verification (2026-10-09): 37 Vitest tests and 6 Chromium E2E cases passed.
-The browser cases cover three journeys at two viewport sizes; they are not six distinct workflows.
+Local verification (2026-10-12): 39 Vitest tests and 10 Chromium E2E cases passed.
+The browser cases cover five journeys at two viewport sizes, including translated review actions and single-language chunk loading.
 Type checking, lint, formatting and production build are also checked.
 
 Use Node.js 22.14 or newer in the Node 22 line. Install Chromium once, then run:
@@ -50,7 +60,7 @@ npm run test:e2e
 ```
 
 The script builds the production bundle; Playwright setup starts and closes an in-process preview server on port 4173.
-Three journeys run at desktop (1440 × 1000) and mobile (390 × 844) sizes.
+Five journeys run at desktop (1440 × 1000) and mobile (390 × 844) sizes.
 Each test gets a fresh browser context. Vitest only collects tests under `src/`.
 Failure traces and the HTML report stay in ignored `test-results/` and `playwright-report/` directories.
 The GitHub workflow runs unit/component checks and Chromium journeys; remote CI status must be checked after pushing.
@@ -89,7 +99,7 @@ flowchart LR
 
 This is a frontend demonstration. Route guards are not server authorization, and mock data is not shared between repositories.
 Review decisions reset on full reload. There is no real review backend.
-No live connection, token refresh, performance benchmark, or public deployment is claimed.
+The app is deployed on Vercel. No real backend connection, token refresh or performance benchmark is claimed; production browser workflows remain unverified here.
 Mobile verification uses a Chromium viewport, not a physical device or Safari.
 Static hosting must rewrite application routes to `index.html` so direct links and refreshes work.
 The local preview is available with `npm run build` followed by `npm run preview`.

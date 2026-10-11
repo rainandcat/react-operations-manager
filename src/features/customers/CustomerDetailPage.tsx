@@ -1,72 +1,83 @@
+import { formatDate } from '@/i18n';
+import { translate, localize, useLocale } from '@/i18n';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { ApiRequestError } from '@/services/apiTypes';
 import { useCustomer } from './useCustomer';
-
 export default function CustomerDetailPage() {
+  useLocale();
   const { customerId } = useParams();
   const location = useLocation();
-  const listSearch = (location.state as { listSearch?: string } | null)?.listSearch;
+  const listSearch = (
+    location.state as {
+      listSearch?: string;
+    } | null
+  )?.listSearch;
   const backTo = listSearch?.startsWith('?') ? `/customers${listSearch}` : '/customers';
   const query = useCustomer(customerId ?? '');
   const notFound = query.error instanceof ApiRequestError && query.error.code === 'NOT_FOUND';
-
   return (
     <div className="page-stack">
       <Link className="back-link" to={backTo}>
-        ← Customer directory
+        {translate('\u2190 Customer directory')}
       </Link>
       {query.isPending && (
         <p className="query-message" role="status">
-          Loading fictional customer…
+          {translate('Loading fictional customer\u2026')}
         </p>
       )}
       {query.isError && (
         <section className="surface empty-state" role="alert">
-          <p className="eyebrow">Customer / {customerId}</p>
-          <h1>{notFound ? 'Customer not found' : 'Customer unavailable'}</h1>
+          <p className="eyebrow">{translate('Customer / {{v0}}', { v0: localize(customerId) })}</p>
+          <h1>{localize(notFound ? 'Customer not found' : 'Customer unavailable')}</h1>
           <p>
-            {query.error instanceof ApiRequestError
-              ? query.error.message
-              : 'An unexpected demo error occurred.'}
+            {localize(
+              query.error instanceof ApiRequestError
+                ? query.error.message
+                : 'An unexpected demo error occurred.'
+            )}
           </p>
           {notFound ? (
             <Link className="button button-primary" to={backTo}>
-              Back to directory
+              {translate('Back to directory')}
             </Link>
           ) : (
             <button className="button button-primary" type="button" onClick={() => query.refetch()}>
-              Try again
+              {translate('Try again')}
             </button>
           )}
         </section>
       )}
       {query.isSuccess && (
         <section className="surface record-detail">
-          <p className="eyebrow">Customer / {query.data.data.id}</p>
-          <h1>{query.data.data.displayName}</h1>
+          <p className="eyebrow">
+            {translate('Customer / {{v0}}', { v0: localize(query.data.data.id) })}
+          </p>
+          <h1>{localize(query.data.data.displayName)}</h1>
           <dl className="record-grid">
             <div>
-              <dt>Status</dt>
-              <dd>{query.data.data.status.replace('_', ' ')}</dd>
+              <dt>{translate('Status')}</dt>
+              <dd>{localize(query.data.data.status.replace('_', ' '))}</dd>
             </div>
             <div>
-              <dt>Joined</dt>
-              <dd>{query.data.data.joinedAt}</dd>
+              <dt>{translate('Joined')}</dt>
+              <dd>{localize(query.data.data.joinedAt)}</dd>
             </div>
             <div>
-              <dt>Last active</dt>
-              <dd>{query.data.data.lastActiveAt ?? 'No activity yet'}</dd>
+              <dt>{translate('Last active')}</dt>
+              <dd>{localize(query.data.data.lastActiveAt ?? 'No activity yet')}</dd>
             </div>
             <div>
-              <dt>Snapshot updated</dt>
-              <dd>{query.data.updatedAt.slice(0, 10)}</dd>
+              <dt>{translate('Snapshot updated')}</dt>
+              <dd>{localize(formatDate(query.data.updatedAt))}</dd>
             </div>
           </dl>
           <p className="muted">
-            All details are fictional. Use the activity directory to explore the demo records.
+            {translate(
+              'All details are fictional. Use the activity directory to explore the demo records.'
+            )}
           </p>
           <Link className="button button-primary" to="/activities">
-            Browse activity records
+            {translate('Browse activity records')}
           </Link>
         </section>
       )}

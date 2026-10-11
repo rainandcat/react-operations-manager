@@ -12,12 +12,19 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:e2e": "npm run build && playwright test"
+    "test:e2e": "npm run build && playwright test",
+    "prebuild": "node scripts/build-locales.mjs",
+    "pretypecheck": "node scripts/build-locales.mjs",
+    "pretest": "node scripts/build-locales.mjs",
+    "predev": "node scripts/build-locales.mjs",
+    "test:i18n": "node scripts/build-locales.mjs"
   },
   "dependencies": {
     "@tanstack/react-query": "5.104.1",
+    "i18next": "^26.4.3",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "react-i18next": "^17.0.16",
     "react-router-dom": "7.18.4",
     "zustand": "5.0.15"
   },
