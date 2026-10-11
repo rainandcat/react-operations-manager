@@ -1,30 +1,29 @@
+import { LanguageSelector } from '@/i18n/LanguageSelector';
+import { translate, localize, useLocale } from '@/i18n';
 import { Suspense } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useManagerSession } from '@/features/auth/sessionStore';
-
 const links = [
   { to: '/overview', label: 'Overview', shortLabel: '01' },
   { to: '/customers', label: 'Customers', shortLabel: '02' },
   { to: '/activities', label: 'Activity', shortLabel: '03' },
   { to: '/reviews', label: 'Review queue', shortLabel: '04' }
 ] as const;
-
 export function ManagerLayout() {
+  useLocale();
   const session = useManagerSession((state) => state.session);
   const signOut = useManagerSession((state) => state.signOut);
   const navigate = useNavigate();
-
   function handleSignOut() {
     signOut();
     navigate('/login', { replace: true });
   }
-
   return (
     <div className="app-shell">
       <a className="skip-link" href="#main-content">
-        Skip to content
+        {translate('Skip to content')}
       </a>
-      <aside className="sidebar" aria-label="Workspace navigation">
+      <aside className="sidebar" aria-label={translate('Workspace navigation')}>
         <div className="brand">
           <span className="brand-mark">O</span>
           <span>
@@ -33,8 +32,8 @@ export function ManagerLayout() {
             Manager
           </span>
         </div>
-        <p className="sidebar-caption">Workspace</p>
-        <nav className="primary-nav" aria-label="Primary">
+        <p className="sidebar-caption">{translate('Workspace')}</p>
+        <nav className="primary-nav" aria-label={translate('Primary')}>
           {links.map((link) => (
             <NavLink
               key={link.to}
@@ -42,29 +41,30 @@ export function ManagerLayout() {
               className={({ isActive }) => `nav-link${isActive ? ' is-active' : ''}`}
             >
               <span className="nav-index" aria-hidden="true">
-                {link.shortLabel}
+                {localize(link.shortLabel)}
               </span>
-              {link.label}
+              {localize(link.label)}
             </NavLink>
           ))}
         </nav>
         <div className="sidebar-foot">
-          Built for focused decisions
+          {translate('Built for focused decisions')}
           <br />
-          <span>Demo environment</span>
+          <span>{translate('Demo environment')}</span>
         </div>
       </aside>
 
       <div className="workspace">
         <header className="topbar">
           <div>
-            <span className="eyebrow">Operations workspace</span>
-            <strong>Manager console</strong>
+            <span className="eyebrow">{translate('Operations workspace')}</span>
+            <strong>{translate('Manager console')}</strong>
           </div>
           <div className="topbar-actions">
-            <span className="identity">{session?.displayName}</span>
+            <LanguageSelector />
+            <span className="identity">{localize(session?.displayName)}</span>
             <button className="button button-secondary" type="button" onClick={handleSignOut}>
-              Sign out
+              {translate('Sign out')}
             </button>
           </div>
         </header>
@@ -72,7 +72,7 @@ export function ManagerLayout() {
           <Suspense
             fallback={
               <div className="page-loading" role="status">
-                Loading page…
+                {translate('Loading page\u2026')}
               </div>
             }
           >
